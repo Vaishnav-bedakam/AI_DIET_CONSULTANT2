@@ -1,9 +1,52 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Login, User, Request
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import datetime
+import random
+import demjson
 
 def loginn(request):
     return render(request, 'admin/login.html')
+def addbatch(request):
+    return render(request, 'admin/Add Batch.html')
+def addtrainer(request):
+    return render(request, 'admin/Add Trainer.html')
+def viewbatch(request):
+    res = Batch.objects.all()
+    if res.exists():
+        l=[]
+        for i in res:
+            a=i.Batch_Capacity
+            re = assign.objects.filter(REQUEST__BATCH_id=i.id,
+                                       REQUEST__status="approved").count()
+
+            b=int(a)-int(re)
+            l.append({
+                "re":re,
+                "Batch_title":i.Batch_title,
+                "Batch_Capacity":i.Batch_Capacity,
+                "Time_from":i.Time_from,
+                "Time_to":i.Time_to,
+                "c":b,
+                "id":i.id,
+
+            })
+
+
+        return render(request, 'admin/View Batch.html',{'data':l})
+    else:
+        return render(request,'admin/nobatches.html')
+
+
+def viewtrainer(request):
+    res=Trainer.objects.all()
+    if res.exists():
+        return render(request, 'admin/View Trainer.html',{'data':res})
+    else:
+        return render(request,'admin/notrainer.html')
+
 
 def adminhome(request):
     res = Request.objects.filter(status="pending")
@@ -31,10 +74,94 @@ def login_post(request):
             return HttpResponse("<script>alert('Invalid username or password');window.location='/'</script>")
     else:
         return HttpResponse("<script>alert('Invalid username or password');window.location='/'</script>")
+def addbatch_post(request):
+    batchtitle=request.POST['textfield5']
+    batchcapacity=request.POST['textfield']
+    from1=request.POST['textfield2']
+    to=request.POST['textfield3']
+    r = Batch.objects.filter(Batch_title=batchtitle,Batch_Capacity=batchcapacity,Time_from=from1,Time_to=to)
+    r1= Batch.objects.filter(Batch_title=batchtitle)
+    if r1.exists():
+        if r.exists():
+             return HttpResponse("<script>alert('Already Exist');window.location='addbatch/'</script>")
+        return HttpResponse("<script>alert('Batch name exists');window.location='addbatch/'</script>")
+    else:
+        obj=Batch()
+        obj.Batch_Capacity=batchcapacity
+        obj.Time_from=from1
+        obj.Time_to=to
+        obj.Batch_title=batchtitle
+        obj.save()
+        return HttpResponse('<script>alert("Added");window.location="/viewbatch#abc"</script>')
+
+
+def addtrainer_post(request):
+    name1=request.POST['textfield']
+    place1=request.POST['textfield2']
+    pin1=request.POST['textfield3']
+    post1=request.POST['textfield4']
+    age1=request.POST['textfield5']
+    gender1=request.POST['RadioGroup1']
+    qualification1=request.POST['textarea']
+    experience1=request.POST['textarea2']
+    mnumber1=request.POST['textfield6']
+    email1=request.POST['textfield7']
+    p=random.randint(0000,9999)
+    r = Trainer.objects.filter(name=name1,place=place1,pin=pin1,post=post1,age=age1,sex=gender1,qualification=qualification1,experience=experience1,
+                               mobilenumber=mnumber1,email=email1)
+    r1=Login.objects.filter(username=email1)
+    import smtplib
+
+    #dietconsultant2024@gmail.com
+    #rkdjjzbccfsaonne
+
+    s = smtplib.SMTP(host='smtp.gmail.com', port=587)
+    s.starttls()
+    s.login("nutrifit20241@gmail.com", "yuxxqtudpztjkzbl")
+    msg = MIMEMultipart()  # create a message.........."
+    msg['From'] = "nutrifit20241@gmail.com"
+    msg['To'] = email1
+    msg['Subject'] = "Your Password for Nutrifit"
+    body = "Username : " + str(email1)+ "\nPassword : "+str(p)
+    msg.attach(MIMEText(body, 'plain'))
+    s.send_message(msg)
+    if r.exists():
+        if r1.exists():
+            return HttpResponse("<script>alert('Email Already Exists');window.location='addtrainer#abc'</script>")
+
+        return HttpResponse("<script>alert('Trainer Already Exists');window.location='addtrainer#abc'</script>")
+
+    else:
+        obj2=Login()
+        obj2.username=email1
+        obj2.password=p
+        obj2.usertype='trainer'
+        obj2.save()
+        obj=Trainer()
+        obj.name=name1
+        obj.place=place1
+        obj.pin=pin1
+        obj.post = post1
+        obj.age=age1
+        obj.sex = gender1
+        obj.qualification = qualification1
+        obj.experience = experience1
+        obj.mobilenumber = mnumber1
+        obj.email = email1
+        obj.LOGIN=obj2
+        obj.save()
+
+        return HttpResponse("<script>alert('added');window.location='viewtrainer#abc'</script>")
+#trainer
+def viewprofile(request):
+    res=Trainer.objects.get(LOGIN=request.session['lid'])
+    return render(request,'trainer/view profile.html',{'data':res})
+def trainerhome(request):
+    return render(request,'trainerIndex.html')
 
 def register(request):
     return render(request, "user/register.html")
-
+#user
 def register_post(request):
     name1 = request.POST.get('textfield')
     place1 = request.POST.get('textfield2')

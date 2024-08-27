@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zxx">
 
 <head>
@@ -22,9 +22,11 @@
     <link rel="stylesheet" href="/static/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="/static/css/style.css" type="text/css">
     <style>
-        .lgo{
-            width: 200px;
+
+        .lgo{width: 200px;
+
         }
+
     </style>
 </head>
 
@@ -37,7 +39,7 @@
     <!-- Header Section Begin -->
     <header class="header-section" style="position:fixed;  background-color: black; z-index:999;">
         <div class="container">
-            <div class="logo">
+            <div class="logo" >
                 <a href="./index.html">
                     <img src="/static/img/logo.png" alt="" class="lgo">
                 </a>
@@ -45,23 +47,14 @@
             <div class="nav-menu">
                 <nav class="mainmenu mobile-menu">
                     <ul>
-                        <li class="active"><a href="/adminhome">Home</a></li>
+                        <li class="active"><a href="/trainerhome">Home</a></li>
 {#                        <li><a href="./about-us.html">About</a></li>#}
 
-                        <li><a href="#">Trainer</a>
-                            <ul class="dropdown">
-                                <li><a href="/addtrainer#abc">Add Trainer</a></li>
-                                <li><a href="/viewtrainer#abc">View Trainer</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Batch</a>
-                            <ul class="dropdown">
-                                <li><a href="/addbatch#abc">Add Batch</a></li>
-                                <li><a href="/viewbatch#abc">View Batch</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="/viewfeedback#abc">Feedback</a></li>
-                        <button class="primary-btn" onclick="return logout()">Log Out <i class="fa fa-sign-out"></i></button>
+
+
+                        <li><a href="/viewprofile#abc">View Profile</a></li>
+                        <li><a href="/viewassignedbatch#abc">Batch</a></li>
+                        <button  onclick="return logout()" class="primary-btn">Log Out <i class="fa fa-sign-out"></i></button>
                     </ul>
 
                 </nav>
@@ -71,6 +64,7 @@
             </div>
             <div id="mobile-menu-wrap"></div>
         </div>
+
     </header>
     <!-- Header End -->
 
@@ -79,15 +73,10 @@
         <div class="hero-items owl-carousel">
             <div class="single-hero-item set-bg" data-setbg="/static/img/slider-bg-1.jpg">
                 <div class="container">
-                    <div class="hero-text" align="center">
-                        <marquee delay="30">
-                            {% for i in lst %}
-                            <span class="text-white" >{{ i }}</span>&emsp;&emsp;
-                            {% endfor %}
-                        </marquee><br><br><br>
+                    <div class="hero-text">
                         <h4>Elite Personal Training Services</h4>
                         <h1>Make it <span>Shape</span></h1>
-
+                        <a href="#" class="primary-btn">Join Us Now</a>
                     </div>
                 </div>
             </div>
@@ -96,7 +85,7 @@
                     <div class="hero-text">
                         <h4>Elite Personal Training Services</h4>
                         <h1>Make it <span>Shape</span></h1>
-
+                        <a href="#" class="primary-btn">Join Us Now</a>
                     </div>
                 </div>
             </div>
@@ -105,7 +94,7 @@
                     <div class="hero-text">
                         <h4>Elite Personal Training Services</h4>
                         <h1>Make it <span>Shape</span></h1>
-
+                        <a href="#" class="primary-btn">Join Us Now</a>
                     </div>
                 </div>
             </div>
@@ -170,7 +159,7 @@
                 <div class="col-lg-12">
                     <h2>Start your Journey with our exciting offers</h2>
 
-
+                    <a href="#" class="primary-btn">Join With Us</a>
                 </div>
             </div>
         </div>
@@ -863,8 +852,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             window.location="#"
         }
     }
-
-        function goback() {
+            function goback() {
             window.history.back();
 
         }
