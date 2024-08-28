@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from .models import Login, User, Request
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from django.db.models import Q
+from myapp.models import *
+
 import datetime
 import random
 import demjson
@@ -161,6 +164,30 @@ def trainerhome(request):
 
 def register(request):
     return render(request, "user/register.html")
+def forgot_pass(request):
+    return render(request, "forget_password.html")
+
+def forgot_pass_post(request):
+    email=request.POST['textfield']
+    log_obj=Login.objects.filter(username=email)
+    if log_obj.exists():
+        res=log_obj[0]
+        import smtplib
+
+        s = smtplib.SMTP(host='smtp.gmail.com', port=587)
+        s.starttls()
+        s.login("nutrifit20241@gmail.com", "yuxxqtudpztjkzbl")
+        msg = MIMEMultipart()  # create a message.........."
+        msg['From'] = "nutrifit20241@gmail.com"
+        msg['To'] = email
+        msg['Subject'] = "Your Password for NUTRIFIT"
+        body = " Your password is : " + str(res.password)
+        msg.attach(MIMEText(body, 'plain'))
+        s.send_message(msg)
+
+        return HttpResponse("<script>alert('Password sent to mail');window.location='/'</script>")
+    else:
+        return HttpResponse("<script>alert('Username not found');window.location='/'</script>")
 #user
 def register_post(request):
     name1 = request.POST.get('textfield')

@@ -14,8 +14,10 @@ urlpatterns = [
     path('addbatch_post', views.addbatch_post),
     path('addtrainer_post', views.addtrainer_post),
     path('viewprofile/',views.viewprofile),
-     path('trainerhome/',views.trainerhome),
+    path('trainerhome/',views.trainerhome),
     path('register',views.register),
     path('register_post',views.register_post),
     path('userhome/',views.userhome),
+    path('forgot_pass',views.forgot_pass),
+    path('forgot_pass_post',views.forgot_pass_post),
 ]
