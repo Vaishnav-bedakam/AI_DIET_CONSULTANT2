@@ -155,6 +155,38 @@ def addtrainer_post(request):
         obj.save()
 
         return HttpResponse("<script>alert('added');window.location='viewtrainer#abc'</script>")
+def updatebatch(request,id):
+    res=Batch.objects.get(id=id)
+    return render(request,'admin/update Batch.html',{'data':res,'id':id})
+
+def updatebatch_post(request,id):
+    batchcapacity=request.POST['textfield']
+    from1=request.POST['textfield2']
+    to=request.POST['textfield3']
+    batchtitle=request.POST['textfield5']
+    Batch.objects.filter(id=id).update(Batch_title=batchtitle,Batch_Capacity=batchcapacity,Time_from=from1,Time_to=to)
+    return HttpResponse("<script>alert('added');window.location='/viewbatch#abc'</script>")
+
+def deletebatch(request,id):
+    Batch.objects.filter(id=id).delete()
+    return HttpResponse("<script>alert('added');window.location='/viewbatch#abc'</script>")
+def updatetraineradmin(request,id):
+    res=Trainer.objects.get(id=id)
+    return render(request,'admin/edit Trainer.html',{'data':res,'id':id})
+def updatetraineradmin_post(request,id):
+    name1 = request.POST['textfield']
+    place1 = request.POST['textfield2']
+    pin1 = request.POST['textfield3']
+    post1 = request.POST['textfield4']
+    age1 = request.POST['textfield5']
+    gender1 = request.POST['RadioGroup1']
+    qualification1 = request.POST['textarea']
+    experience1 = request.POST['textarea2']
+    mnumber1 = request.POST['textfield6']
+    email1 = request.POST['textfield7']
+    Trainer.objects.filter(id=id).update(name=name1,place=place1,pin=pin1,post=post1,age=age1,sex=gender1,qualification=qualification1,experience=experience1,mobilenumber=mnumber1,email=email1)
+    return HttpResponse("<script>alert('added');window.location='/viewtrainer#abc'</script>")
+
 #trainer
 def viewprofile(request):
     res=Trainer.objects.get(LOGIN=request.session['lid'])
@@ -162,8 +194,7 @@ def viewprofile(request):
 def trainerhome(request):
     return render(request,'trainerIndex.html')
 
-def register(request):
-    return render(request, "user/register.html")
+
 def forgot_pass(request):
     return render(request, "forget_password.html")
 
@@ -189,6 +220,13 @@ def forgot_pass_post(request):
     else:
         return HttpResponse("<script>alert('Username not found');window.location='/'</script>")
 #user
+def register(request):
+    return render(request, "user/register.html")
+    
+def viewuserprofile(request):
+    res = User.objects.get(LOGIN=request.session['lid'])
+    return render(request,"user/viewprofile.html",{"data":res})
+
 def register_post(request):
     name1 = request.POST.get('textfield')
     place1 = request.POST.get('textfield2')
@@ -229,3 +267,23 @@ def register_post(request):
 
 def userhome(request):
     return render(request, 'userIndex.html')
+def updateuser(request,id):
+    res=User.objects.get(id=id)
+    res1 = Login.objects.get(id=id)
+    return render(request,'user/updateprofile.html',{'data':res,'id':id,'data1':res1})
+
+def updateuser_post(request,id):
+    name1 = request.POST['textfield']
+    place1 = request.POST['textfield2']
+    pin1 = request.POST['textfield3']
+    post1 = request.POST['textfield4']
+    age1 = request.POST['textfield5']
+    gender1 = request.POST['RadioGroup1']
+    occupation1 = request.POST['textfield8']
+    password1 = request.POST['textfield9']
+    mnumber1 = request.POST['textfield6']
+    email1 = request.POST['textfield7']
+    User.objects.filter(id=id).update(name=name1, place=place1, pin=pin1, post=post1, age=age1, sex=gender1,
+                                         occupation=occupation1,mobilenumber=mnumber1,email=email1)
+    Login.objects.filter(id=request.session['lid']).update(password=password1)
+    return HttpResponse("<script>alert('Updated Successfully');window.location='/viewuserprofile'</script>")
