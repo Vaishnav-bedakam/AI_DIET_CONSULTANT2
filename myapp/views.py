@@ -186,6 +186,16 @@ def updatetraineradmin_post(request,id):
     email1 = request.POST['textfield7']
     Trainer.objects.filter(id=id).update(name=name1,place=place1,pin=pin1,post=post1,age=age1,sex=gender1,qualification=qualification1,experience=experience1,mobilenumber=mnumber1,email=email1)
     return HttpResponse("<script>alert('added');window.location='/viewtrainer#abc'</script>")
+def deletetrainer(request,id):
+    trainer_instance = Trainer.objects.get(id=id)
+
+    login_instance = trainer_instance.LOGIN
+
+    trainer_instance.delete()
+    login_instance.delete()
+
+    return HttpResponse("<script>alert('Trainer and associated Login deleted');window.location='/viewtrainer#abc'</script>")
+
 
 #trainer
 def viewprofile(request):
