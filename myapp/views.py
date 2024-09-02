@@ -195,7 +195,18 @@ def deletetrainer(request,id):
     login_instance.delete()
 
     return HttpResponse("<script>alert('Trainer and associated Login deleted');window.location='/viewtrainer#abc'</script>")
-
+def viewfeedback(request):
+    res=feedback.objects.all()
+    if res.exists():
+        return render(request, 'admin/view feedback.html',{'data':res})
+    else:
+        return render(request,'admin/nofeedback.html')
+def viewrequest(requset,id):
+    res = Request.objects.filter(BATCH=Batch.objects.get(id=id),status="pending")
+    if res.exists():
+        return render(requset, 'admin/View Request.html',{'data':res})
+    else:
+        return render(requset,'admin/norequest.html')
 
 #trainer
 def viewprofile(request):
@@ -297,3 +308,69 @@ def updateuser_post(request,id):
                                          occupation=occupation1,mobilenumber=mnumber1,email=email1)
     Login.objects.filter(id=request.session['lid']).update(password=password1)
     return HttpResponse("<script>alert('Updated Successfully');window.location='/viewuserprofile'</script>")
+def sendfeedback(request):
+    return render(request, 'user/send feedback.html')
+
+def sendfeedback_post(request):
+    feedbackk=request.POST['textarea']
+    d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+    r = feedback.objects.filter(time=d1)
+    if r.exists():
+        return HttpResponse("alert('already submitted');window.location='sendfeedback/#abc'")
+    else:
+        obj=feedback()
+        obj.feedback=feedbackk
+        obj.time=d1
+        obj.USER=User.objects.get(LOGIN=request.session['lid'])
+        obj.save()
+        return HttpResponse("<script>alert('Successfully Sent');window.location='/userhome'</script>")
+def viewbatchuser(request):
+
+    batches = Batch.objects.all()
+
+    if batches.exists():
+
+
+        batch_list = []
+        request_list = []
+
+
+
+
+        for batch in batches:
+
+            assignment_count = assign.objects.filter(REQUEST__BATCH=batch.id).count()
+
+
+            capacity_remaining = int(batch.Batch_Capacity) - int(assignment_count)
+
+
+            batch_list.append({
+                "id": batch.id,
+                "Batch_title": batch.Batch_title,
+                "Batch_Capacity": batch.Batch_Capacity,
+                "Time_from": batch.Time_from,
+                "Time_to": batch.Time_to,
+                "Capacity_remaining": capacity_remaining,
+                "assignment_count": assignment_count,
+            })
+
+        user_requests2 = Request.objects.filter(USER__LOGIN__id=request.session['lid']).order_by('-id')
+
+
+        if user_requests2.exists():
+            user_requests2 = user_requests2[0]
+
+            request_list.append({
+                "status": user_requests2.status,
+            })
+        else:
+
+            request_list.append({})
+
+
+        return render(request, 'user/view batch.html', {'data': batch_list, 'data1': request_list})
+    else:
+        return render(request, 'user/nobatches.html')
+
+

@@ -19,6 +19,8 @@ urlpatterns = [
     path('viewbatch', views.viewbatch),
     path('addbatch_post', views.addbatch_post),
     path('addtrainer_post', views.addtrainer_post),
+    path('viewfeedback', views.viewfeedback),
+    path('viewrequest/<id>', views.viewrequest),
     path('viewprofile/',views.viewprofile),
     path('trainerhome/',views.trainerhome),
     path('register',views.register),
@@ -29,4 +31,8 @@ urlpatterns = [
     path('updateuser/<id>',views.updateuser),
     path('updateuser_post/<id>',views.updateuser_post),
     path('viewuserprofile',views.viewuserprofile),
+    path('sendfeedback_post/',views.sendfeedback_post),
+    path('sendfeedback/',views.sendfeedback),
+    path('viewbatchuser/',views.viewbatchuser),
+   
 ]
