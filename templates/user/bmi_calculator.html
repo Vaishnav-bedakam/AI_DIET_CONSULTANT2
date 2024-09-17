@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    
+    <!-- CSS Styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h2 {
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        input[type="submit"] {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        p.error {
+            color: red;
+        }
+        a {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    
+    <!-- JavaScript Validation -->
+    <script>
+        function validateForm() {
+            let weight = document.getElementById("weight").value;
+            let height = document.getElementById("height").value;
+
+            if (isNaN(weight) || weight <= 0) {
+                alert("Please enter a valid weight in kg.");
+                return false;
+            }
+
+            if (isNaN(height) || height <= 0) {
+                alert("Please enter a valid height in cm.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h2>BMI Calculator</h2>
+
+    <!-- Form to input weight and height -->
+    <form method="POST" action="/calculate_bmi/" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <label for="weight">Weight (kg):</label>
+        <input type="text" id="weight" name="weight" required />
+        
+        <label for="height">Height (cm):</label>
+        <input type="text" id="height" name="height" required />
+        
+        <input type="submit" value="Calculate BMI" />
+    </form>
+
+    <!-- Display the calculated BMI and health details -->
+    {% if bmi %}
+        <p>Your BMI is: <strong>{{ bmi }}</strong></p>
+        <p>You are classified as: <strong>{{ category }}</strong></p>
+        <p>{{ advice }}</p>
+    {% elif error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <a href="/userhome">Go Back</a>
+</div>
+
+</body>
+</html>

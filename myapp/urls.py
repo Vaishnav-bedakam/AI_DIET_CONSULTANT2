@@ -34,5 +34,6 @@ urlpatterns = [
     path('sendfeedback_post/',views.sendfeedback_post),
     path('sendfeedback/',views.sendfeedback),
     path('viewbatchuser/',views.viewbatchuser),
+    path('calculate_bmi/', views.calculate_bmi),
    
 ]

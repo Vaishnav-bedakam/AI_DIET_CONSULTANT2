@@ -373,4 +373,40 @@ def viewbatchuser(request):
     else:
         return render(request, 'user/nobatches.html')
 
+def calculate_bmi(request):
+    if request.method == "POST":
+        try:
+            weight = float(request.POST.get('weight'))
+            height_cm = float(request.POST.get('height'))
+            height_m = height_cm / 100  # Convert height from cm to meters
+            bmi = weight / (height_m ** 2)  # BMI formula
 
+            # Determine the health category based on BMI
+            if bmi < 18.5:
+                category = "Underweight"
+                advice = "Your BMI is below the normal range. It's important to eat a balanced diet and maintain a healthy lifestyle. Consider consulting a healthcare provider."
+            elif 18.5 <= bmi < 24.9:
+                category = "Normal weight"
+                advice = "Your BMI is within the normal range. Maintain a balanced diet and regular exercise to stay healthy!"
+            elif 25 <= bmi < 29.9:
+                category = "Overweight"
+                advice = "Your BMI is slightly above the normal range. It might be beneficial to adopt a healthier diet and increase physical activity."
+            elif 30 <= bmi < 34.9:
+                category = "Obesity (Class 1)"
+                advice = "Your BMI indicates obesity. It is important to follow a healthier lifestyle, including a nutritious diet and regular exercise. Consult a healthcare provider for personalized advice."
+            elif 35 <= bmi < 39.9:
+                category = "Obesity (Class 2)"
+                advice = "Your BMI falls in the severe obesity category. Consider working closely with healthcare professionals to manage your weight and reduce health risks."
+            else:
+                category = "Morbid Obesity (Class 3)"
+                advice = "Your BMI indicates morbid obesity. This significantly increases the risk of various health issues. It is strongly advised to seek medical consultation to develop a weight management plan."
+
+            return render(request, 'user/bmi_calculator.html', {
+                'bmi': round(bmi, 2),
+                'category': category,
+                'advice': advice
+            })
+        except (ValueError, ZeroDivisionError):
+            return render(request, 'user/bmi_calculator.html', {'error': 'Please enter valid numbers.'})
+
+    return render(request, 'user/bmi_calculator.html')
