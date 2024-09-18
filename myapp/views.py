@@ -201,12 +201,12 @@ def viewfeedback(request):
         return render(request, 'admin/view feedback.html',{'data':res})
     else:
         return render(request,'admin/nofeedback.html')
-def viewrequest(requset,id):
+def viewrequest(request,id):
     res = Request.objects.filter(BATCH=Batch.objects.get(id=id),status="pending")
     if res.exists():
-        return render(requset, 'admin/View Request.html',{'data':res})
+        return render(request, 'admin/View Request.html',{'data':res})
     else:
-        return render(requset,'admin/norequest.html')
+        return render(request,'admin/norequest.html')
 
 #trainer
 def viewprofile(request):
@@ -372,6 +372,126 @@ def viewbatchuser(request):
         return render(request, 'user/view batch.html', {'data': batch_list, 'data1': request_list})
     else:
         return render(request, 'user/nobatches.html')
+def sendrequest(request,id,jid):
+    d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+
+    res = Request.objects.filter(
+        Q(USER=User.objects.get(LOGIN=request.session['lid']), status="approved") |
+        Q(USER=User.objects.get(LOGIN=request.session['lid']), status="pending")
+    )
+    res1 = health.objects.filter(USER__LOGIN_id=request.session['lid'])
+    res3= Batch.objects.filter(Batch_Capacity=jid)
+    if res3.exists():
+        return HttpResponse("<script>alert('Batch is full');window.location='/viewbatchuser#abc'</script>")
+    else:
+        if res1.exists():
+            if res.exists():
+                return HttpResponse("<script>alert('already sent');window.location='/viewbatchuser#abc'</script>")
+            obj=Request()
+            obj.USER=User.objects.get(LOGIN=request.session['lid'])
+            obj.BATCH_id=id
+            obj.time=d1
+            obj.status="pending"
+            obj.save()
+            return HttpResponse("<script>alert('Successfully sent');window.location='/viewbatchuser#abc'</script>")
+        else:
+            return HttpResponse("<script>alert('Please enter health details before sending request');window.location='/uploadhealth/#abc'</script>")
+def uploadhealth(request):
+    res = health.objects.filter(USER_id=User.objects.get(LOGIN_id=request.session['lid'])).order_by('-id')
+
+    if res.exists():
+        return render(request, 'user/uploadhealthinfo.html',{'data': res[0]})
+    else:
+        return render(request, 'user/uploadhealthinfo.html')
+
+def uploadhealth_post(request):
+    height1=request.POST['textfield']
+    weight1=request.POST['textfield2']
+    height=float(height1)/100
+    bmi1= round(float(weight1) / (height * height), 2)
+    active=request.POST['select']
+    foodtype1=request.POST['RadioGroup1']
+    target1=request.POST['RadioGroup2']
+    targetweight1=request.POST['textfield3']
+    weeklytarget1=request.POST['select2']
+    estimatedtime1=request.POST['textfield4']
+    mcondition1=request.POST.getlist('CheckboxGroup1')
+    allergies1=request.POST['textfield6']
+    uid = User.objects.get(LOGIN=request.session['lid'])
+
+    obj=health()
+    obj.height=height1
+    obj.weight=weight1
+    obj.activelevel=active
+    obj.medical=",".join(mcondition1)
+    obj.bmi=bmi1
+    obj.foodtype=foodtype1
+    obj.target=target1
+    obj.targetweight=targetweight1
+    obj.estimatedtime=estimatedtime1
+    obj.weeklytarget=weeklytarget1
+    obj.USER=uid
+    obj.allergies=allergies1
+
+    obj.save()
+
+    return HttpResponse("<script>window.location='/viewhealth#abc'</script>")
+def viewhealth(requset):
+    res = health.objects.filter(USER__LOGIN_id= requset.session['lid']).order_by('-id')
+    if res.exists():
+        return render(requset, 'user/viewhealthuser.html', {'data': res[0]})
+    else:
+        return HttpResponse("<script>alert('Enter Health Details');window.location='/uploadhealth#abc'</script>")
+
+
+
+def updatehealth(requset,id):
+    res = health.objects.get(id=id)
+    return render(requset,'user/updatehealth.html',{'data':res})
+
+def updatehealth_post(requset,id):
+    height1 = requset.POST['textfield']
+    weight1 = requset.POST['textfield2']
+    height = float(height1) / 100
+    bmi1 = round(float(weight1) / (height * height), 2)
+    active = requset.POST['select']
+    foodtype1 = requset.POST['RadioGroup1']
+    target1 = requset.POST['RadioGroup2']
+    targetweight1 = requset.POST['textfield3']
+    weeklytarget1 = requset.POST['select2']
+    estimatedtime1 = requset.POST['textfield4']
+    mcondition1 = requset.POST.getlist('CheckboxGroup1')
+    allergies1 = requset.POST['textfield6']
+    health.objects.filter(id=id).update(height=height1,weight=weight1,bmi=bmi1,activelevel=active,foodtype=foodtype1,
+                                        target=target1,targetweight=targetweight1,weeklytarget=weeklytarget1,estimatedtime=estimatedtime1,
+                                        medical=",".join(mcondition1),allergies=allergies1)
+    return HttpResponse("<script>alert('edited');window.location='/viewhealth'</script>")
+
+def mybatch(requset):
+    r=Request.objects.filter(USER__LOGIN_id=requset.session['lid'], status="approved")
+    if r.exists():
+        l=[]
+        for i in r:
+            res=assign.objects.filter(REQUEST=i.id)
+            for ij in res:
+                l.append({
+                    "name":i.BATCH.Batch_title,
+                    "cap": i.BATCH.Batch_Capacity,
+                    "tfrom": i.BATCH.Time_from,
+                    "tTo": i.BATCH.Time_to,
+                    "tname": ij.TRAINER.name,
+                    "id":ij.TRAINER.id,
+                    "bid":i.id
+                })
+
+        return render(requset,'user/mybatch.html',{'data':l})
+    else:
+        return HttpResponse("<script>alert('You are not assigned to any batch!!!');window.location='/userhome';</script>")
+
+
+def user_exit_batch(request, id):
+    Request.objects.filter(id=id).update(status="Left")
+    return HttpResponse("<script>alert('Successfully left the batch');window.location='/userhome';</script>")
 
 def calculate_bmi(request):
     if request.method == "POST":

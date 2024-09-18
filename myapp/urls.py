@@ -26,6 +26,7 @@ urlpatterns = [
     path('register',views.register),
     path('register_post',views.register_post),
     path('userhome/',views.userhome),
+     path('uploadhealth/',views.uploadhealth),
     path('forgot_pass',views.forgot_pass),
     path('forgot_pass_post',views.forgot_pass_post),
     path('updateuser/<id>',views.updateuser),
@@ -35,5 +36,10 @@ urlpatterns = [
     path('sendfeedback/',views.sendfeedback),
     path('viewbatchuser/',views.viewbatchuser),
     path('calculate_bmi/', views.calculate_bmi),
-   
+    path('sendrequest/<id>/<jid>',views.sendrequest),
+    path('uploadhealthpost/',views.uploadhealth_post),
+    path('viewhealth/',views.viewhealth),
+    path('updatehealth/<id>',views.updatehealth),
+    path('updatehealth_post/<id>',views.updatehealth_post),
+    path('mybatch/',views.mybatch),
 ]

@@ -1,1 +1,1 @@
-aidietconsultantmyapp_loginmyapp_login
+aidietconsultant
