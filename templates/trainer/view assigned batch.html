@@ -1,0 +1,41 @@
+{% extends 'trainerIndex.html' %}
+{% block body %}
+<div class="container c9">
+    <h2 style="color: white; text-align: center;">Assigned Batch</h2>
+    <table class="table table-borderless" style="background-color: white;" border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Batch Title</th>
+                <th>Batch Capacity</th>
+                <th>Joined members</th>
+                <th>Under my Supervision</th>
+                <th>Remaining Seats</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ i.title }}</td>
+                <td>{{ i.Batch_Capacity }}</td>
+                <td>{{ i.rr }}</td>
+                <td>{{ i.r1 }}</td>
+                <td>{{ i.c }}</td>
+                <td>{{ i.Time_from }}</td>
+                <td>{{ i.Time_to }}</td>
+                <td>
+                    <a class="btn btn-primary pl-2 pr-2" href="/viewmembers/{{ i.id }}#abc">
+                        View Members <i class="fa fa-eye" aria-hidden="true"></i>
+                    </a>
+                </td> <!-- Closing the <td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/trainerhome" class="btn btn-primary">Back</a>
+</div>
+{% endblock %}

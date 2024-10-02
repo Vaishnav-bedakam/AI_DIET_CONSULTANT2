@@ -323,12 +323,234 @@ def deleterequest(request,id):
     return HttpResponse("<script>alert('rejected!');window.location='/viewbatch#abc'</script>")
 
 #trainer
+def uploaddietplan(request,id, uid):
+    health.objects.filter(id=id)
+    return render(request,'trainer/Upload Diet Plan.html',{'id':id, 'uid':uid})
+
+def uploaddietplan_post(request,id, uid):
+    title1=request.POST['time']
+    description1=request.POST['description']
+    d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+    r = Trainer.objects.get(LOGIN=request.session['lid'])
+    obj = diet()
+    obj.date = d1
+    obj.title=title1
+    obj.description=description1
+    obj.TRAINER=r
+    obj.USER_id=uid
+    obj.save()
+    return HttpResponse("<script>alert('Added');window.location.href='/uploaddietplan/{}/{}';</script>".format(id,uid))
+
+
+
+def viewdietplan(request,uid):
+    res=diet.objects.filter(USER_id=uid)
+    if res.exists():
+        return render(request,'trainer/viewdietplan.html',{'data':res})
+    else:
+        return render(request,'trainer/nodietplan.html')
+
+
+def editdietplan(request,id):
+    res = diet.objects.get(id=id)
+
+    return render(request, 'trainer/edit Diet Plan.html', {'data': res, 'id': id})
+
+def editdietplan_post(request,id):
+    title1=request.POST['time']
+    description1=request.POST['description']
+    d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+    diet.objects.filter(id=id).update(title=title1, description=description1, date=d1)
+    return HttpResponse("<script>alert('Edited Successfully');window.location='/trainerhome'</script>")
+
+def deletedietplan(request,id):
+    diet.objects.filter(id=id).delete()
+    return HttpResponse("<script>alert('Edited Successfully');window.location='/trainerhome'</script>")
+def addtips(request, uid):
+    return render(request,'trainer/add tips.html', {'uid':uid})
+
+def addworkout(request,uid):
+    return render(request,'trainer/add workout.html',{'uid':uid})
+def viewtips(request,uid):
+    r = Trainer.objects.get(LOGIN=request.session['lid'])
+    res = tips.objects.filter(TRAINER=r, USER_id=uid)
+    if res.exists():
+        return render(request,'trainer/view tips.html',{'data':res})
+    else:
+        return render(request,'trainer/notips.html')
+
+
+def viewworkout(request,uid):
+    r = Trainer.objects.get(LOGIN=request.session['lid'])
+    res = workout.objects.filter(TRAINER=r,USER_id=uid)
+    if res.exists():
+        return render(request,'trainer/view workout.html',{'data':res})
+    else:
+        return render(request,'trainer/noworkout.html')
+def addtips_post(request,uid):
+    title=request.POST['textfield']
+    description=request.POST['textarea']
+    d = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+    r = Trainer.objects.get(LOGIN=request.session['lid'])
+    obj=tips()
+    obj.title=title
+    obj.description=description
+    obj.date=d
+    obj.TRAINER=r
+    obj.USER_id=uid
+
+    obj.save()
+
+    return HttpResponse("<script>alert('Added');window.location.href='/viewtips/{}#abc';</script>".format(uid))
+
+
+def addworkout_post(request,uid):
+    title=request.POST['textfield']
+    description=request.POST['textarea']
+    video=request.FILES['fileField']
+    d = datetime.datetime.now().strftime("%d%m%Y-%H%M%S")
+    d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+    r = Trainer.objects.get(LOGIN=request.session['lid'])
+    fs=FileSystemStorage()
+    fs.save(r"E:\nutrifit\AI_DIET_CONSULTANT\myapp\static\videos\\" + d +".mp4", video)
+
+    path="/static/videos/" + d + ".mp4"
+    r1 = workout.objects.filter(title=title,description=description)
+    if r1.exists():
+        return HttpResponse("<script>alert('Added');window.location.href='/viewworkout/{}#abc';</script>".format(uid))
+    else:
+        obj=workout()
+        obj.title=title
+        obj.description=description
+        obj.date=d1
+        obj.video=path
+        obj.TRAINER=r
+        obj.USER_id=uid
+        obj.save()
+        return HttpResponse("<script>alert('Added');window.location.href='/viewworkout/{}#abc';</script>".format(uid))
+
+def edittip(request,id):
+    res = tips.objects.get(id=id)
+    return render(request, 'trainer/edit tip.html', {'data': res, 'id': id})
+
+def edittip_post(request,id):
+    title = request.POST['textfield']
+    description = request.POST['textarea']
+    d = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+    tips.objects.filter(id=id).update(title=title,description=description,date=d)
+    return HttpResponse("<script>alert('edited');window.location='/trainerhome'</script>")
+
+def deletetip(request,id):
+    tips.objects.filter(id=id).delete()
+    return HttpResponse("<script>alert('deleted');window.location='/trainerhome'</script>")
+
+def editworkout(request,id):
+    res = workout.objects.get(id=id)
+    return render(request, 'trainer/editworkout.html', {'data': res, 'id': id})
+
+# def editworkout_post(request,id):
+#     title=request.POST['textfield']
+#     description=request.POST['textarea']
+#     video=request.FILES['fileField']
+#     d = datetime.datetime.now().strftime("%d%m%Y-%H%M%S")
+#     d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+#     fs=FileSystemStorage()
+#     fs.save(r"E:\nutrifit\AI_DIET_CONSULTANT\myapp\static\videos\\" + d +".mp4", video)
+
+#     path="/static/videos/" + d + ".mp4"
+#     workout.objects.filter(id=id).update(title=title, description=description, video=path,date=d1)
+#     return HttpResponse("<script>alert('edited');window.location='/trainerhome'</script>")
+def editworkout_post(request, id):
+    title = request.POST.get('textfield')
+    description = request.POST.get('textarea')
+    video = request.FILES.get('fileField', None)  # Use .get() to avoid the KeyError
+
+    if video:  # Proceed only if a video is uploaded
+        d = datetime.datetime.now().strftime("%d%m%Y-%H%M%S")
+        d1 = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+        fs = FileSystemStorage()
+        fs.save(r"E:\nutrifit\AI_DIET_CONSULTANT\myapp\static\videos\\" + d + ".mp4", video)
+        path = "/static/videos/" + d + ".mp4"
+        workout.objects.filter(id=id).update(title=title, description=description, video=path, date=d1)
+    else:
+        workout.objects.filter(id=id).update(title=title, description=description)
+    
+    return HttpResponse("<script>alert('edited');window.location='/trainerhome'</script>")
+
+
+def deleteworkout(request,id):
+    workout.objects.filter(id=id).delete()
+    return HttpResponse("<script>alert('deleted');window.location='/trainerhome'</script>;")
 def viewprofile(request):
     res=Trainer.objects.get(LOGIN=request.session['lid'])
     return render(request,'trainer/view profile.html',{'data':res})
 def trainerhome(request):
     return render(request,'trainerIndex.html')
+def viewassignedbatch(request):
+    r = Trainer.objects.get(LOGIN=request.session['lid'])
+    res = assign.objects.filter(TRAINER=r, REQUEST__status="approved")
+    if res.exists():
+        L = []
+        seen_batch_ids = set()
 
+        for i in res:
+            re = Request.objects.filter(id=i.REQUEST.id).order_by('BATCH').values()
+            rr = Request.objects.filter(BATCH=i.REQUEST.BATCH.id, status="approved").count()
+            r1 = assign.objects.filter(REQUEST__BATCH_id=i.REQUEST.BATCH.id, TRAINER=r, REQUEST__status="approved").count()
+
+            for ij in re:
+                batch_id = i.REQUEST.BATCH.id
+
+                if batch_id not in seen_batch_ids:
+                    a = i.REQUEST.BATCH.Batch_Capacity
+                    L.append({
+                        "title": i.REQUEST.BATCH.Batch_title,
+                        "Batch_Capacity": i.REQUEST.BATCH.Batch_Capacity,
+                        "Time_from": i.REQUEST.BATCH.Time_from,
+                        "Time_to": i.REQUEST.BATCH.Time_to,
+                        "id": batch_id,
+                        "rr": rr,
+                        "r1": r1,
+                        "c": int(a) - int(rr),
+                    })
+                    seen_batch_ids.add(batch_id)
+
+        return render(request, 'trainer/view assigned batch.html', {'data': L})
+    else:
+        return render(request,'trainer/nobatches.html')
+
+def viewmembers(request,id):
+    tid = Trainer.objects.get(LOGIN=request.session['lid'])
+    l=[]
+
+    re = assign.objects.filter(TRAINER=tid, REQUEST__status="approved")
+    if re.exists():
+        for i in re:
+            res = Request.objects.filter(BATCH=id, id=i.REQUEST.id)
+            for ij in res:
+                l.append({
+                    "name":ij.USER.name,
+                    "place":ij.USER.place,
+                    "age":ij.USER.age,
+                    "sex":ij.USER.sex,
+                    "occupation":ij.USER.occupation,
+                    "mobilenumber":ij.USER.mobilenumber,
+                    "email":ij.USER.email,
+                    "id":ij.USER.id
+                })
+
+        return render(request,'trainer/view members.html',{'data':l})
+    else:
+        return render(request,'trainer/nomembers.html')
+def viewhealthinfo(request, id):
+    try:
+        user = User.objects.get(id=id)
+        request_obj = Request.objects.filter(USER=user).latest('id')  # Assuming the latest request contains the batch information
+        batch_id = request_obj.BATCH.id
+        health_records = health.objects.filter(USER=user).order_by('-id')
+        return render(request, 'trainer/view health info.html', {'data': health_records, 'uid': id, 'batch_id': batch_id})
+    except (User.DoesNotExist, Request.DoesNotExist):
+        return render(request, 'trainer/nohealth.html')
 
 def forgot_pass(request):
     return render(request, "forget_password.html")
@@ -606,6 +828,28 @@ def mybatch(request):
 def user_exit_batch(request, id):
     Request.objects.filter(id=id).update(status="Left")
     return HttpResponse("<script>alert('Successfully left the batch');window.location='/userhome';</script>")
+
+
+def viewdietplanuser(request):
+    res =diet.objects.filter(USER__LOGIN_id=request.session['lid'])
+    if res.exists():
+        return render(request,'user/viewdietplanuser.html',{'data':res})
+    else:
+        return render(request,'user/nodietplan.html')
+
+def viewtipsuser(request):
+    res = tips.objects.filter(USER__LOGIN_id=request.session['lid'])
+    if res.exists():
+        return render(request,'user/view tips.html',{'data':res})
+    else:
+        return render(request,'user/notips.html')
+
+def viewworkoutuser(request):
+    res = workout.objects.filter(USER__LOGIN_id=request.session['lid'])
+    if res.exists():
+        return render(request,'user/view workout.html',{'data':res})
+    else:
+        return render(request,'user/noworkouts.html')
 
 def calculate_bmi(request):
     if request.method == "POST":
