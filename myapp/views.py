@@ -264,7 +264,7 @@ def updatebatch_post(request,id):
 
 def deletebatch(request,id):
     Batch.objects.filter(id=id).delete()
-    return HttpResponse("<script>alert('added');window.location='/viewbatch#abc'</script>")
+    return HttpResponse("<script>alert('Deleted');window.location='/viewbatch#abc'</script>")
 
 def updatetrainer(request,id):
     res=Trainer.objects.get(id=id)
