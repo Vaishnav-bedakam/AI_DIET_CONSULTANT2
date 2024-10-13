@@ -75,4 +75,10 @@ urlpatterns = [
     path('updatehealth/<id>',views.updatehealth),
     path('updatehealth_post/<id>',views.updatehealth_post),
     path('mybatch/',views.mybatch),
+    path('chattrainer/<id>',views.chattrainer),
+    path('chatuser/<id>',views.chatuser),
+    path('chatsent',views.chatsnd),
+    path('Uchatsent',views.Uchatsent),
+    path('chatreply',views.chatrply),
+    path('Uchatreply',views.Uchatrply),
 ]

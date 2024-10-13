@@ -323,6 +323,53 @@ def deleterequest(request,id):
     return HttpResponse("<script>alert('rejected!');window.location='/viewbatch#abc'</script>")
 
 #trainer
+def chattrainer(requset,id):
+    requset.session['uid']=id
+    return render(requset,"trainer/chat.html")
+
+def chatsnd(request):
+
+      if request.method=="POST":
+        d=datetime.datetime.now().strftime("%Y-%m-%d")
+        c = request.session['lid']
+        m=request.POST['m']
+        cc = Trainer.objects.get(LOGIN__id=c)
+        uu = User.objects.get(id=request.session['uid'])
+        obj=chat()
+        obj.date=d
+        obj.usertype='trainer'
+        obj.TRAINER=cc
+        obj.USER=uu
+        obj.chat=m
+        obj.save()
+        v = {}
+        if int(obj) > 0:
+            v["status"] = "ok"
+        else:
+            v["status"] = "error"
+        r = demjson.encode(v)
+        return r
+
+
+
+
+def chatrply(request):
+
+        c = request.session['lid']
+        cc=Trainer.objects.get(LOGIN__id=c)
+        uu=User.objects.get(id=request.session['uid'])
+        res = chat.objects.filter(TRAINER_id=cc,USER_id=uu)
+        v = []
+        if len(res) > 0:
+            for i in res:
+                v.append({
+                    'type':i.usertype,
+                    'chat':i.chat,
+                })
+
+            return JsonResponse({"status": "ok", "data": v, "id": cc.id})
+        else:
+            return JsonResponse({"status": "error"})
 def uploaddietplan(request,id, uid):
     health.objects.filter(id=id)
     return render(request,'trainer/Upload Diet Plan.html',{'id':id, 'uid':uid})
@@ -577,6 +624,58 @@ def forgot_pass_post(request):
     else:
         return HttpResponse("<script>alert('Username not found');window.location='/'</script>")
 #user
+def chatuser(requset,id):
+    requset.session['uid']=id
+    return render(requset,"user/chat.html")
+
+def Uchatsent(request):
+      if request.method=="POST":
+
+        d=datetime.datetime.now().strftime("%Y-%m-%d")
+
+        c = request.session['lid']
+
+        m=request.POST['m']
+        cc = User.objects.get(LOGIN__id=c)
+        uu = Trainer.objects.get(id=request.session['uid'])
+
+        obj=chat()
+        obj.chat_date=d
+
+        obj.usertype='user'
+        obj.TRAINER=uu
+        obj.USER=cc
+        obj.date=d
+        obj.chat=m
+        obj.save()
+        v = {}
+        v["status"] = "ok"
+        r = demjson.encode(v)
+
+        return JsonResponse({'status':"ok"})
+
+
+
+
+def Uchatrply(request):
+
+        c = request.session['lid']
+        uu=User.objects.get(LOGIN__id=c)
+        cc=Trainer.objects.get(id=request.session['uid'])
+        res = chat.objects.filter(TRAINER_id=cc,USER_id=uu)
+        v = []
+        if len(res) > 0:
+            for i in res:
+                v.append({
+                    'type':i.usertype,
+                    'chat':i.chat,
+                })
+
+            return JsonResponse({"status": "ok", "data": v, "id": cc.id})
+        else:
+            return JsonResponse({"status": "error"})
+
+
 def register(request):
     return render(request, "user/register.html")
     
