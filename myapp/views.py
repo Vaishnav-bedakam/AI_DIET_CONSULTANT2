@@ -949,6 +949,30 @@ def viewworkoutuser(request):
         return render(request,'user/view workout.html',{'data':res})
     else:
         return render(request,'user/noworkouts.html')
+# def deleteuser(requset,id):
+
+#         user_to_delete = User.objects.get(id=id)
+
+#         login_to_delete = user_to_delete.LOGIN
+
+#         user_to_delete.delete()
+
+
+#         login_to_delete.delete()
+
+#         return HttpResponse("<script>alert('User deleted successfully');window.location='/viewbatch#abc'</script>")
+
+# def deleteuserprofile(requset,id):
+
+#         user_to_delete = User.objects.get(id=id)
+
+#         login_to_delete = user_to_delete.LOGIN
+
+#         user_to_delete.delete()
+
+#         login_to_delete.delete()
+
+#         return HttpResponse("<script>alert('Profile deleted successfully');window.location='/'</script>")
 
 def calculate_bmi(request):
     if request.method == "POST":
@@ -987,3 +1011,60 @@ def calculate_bmi(request):
             return render(request, 'user/bmi_calculator.html', {'error': 'Please enter valid numbers.'})
 
     return render(request, 'user/bmi_calculator.html')
+def myprogress(requset):
+    res = health.objects.filter(USER=User.objects.get(LOGIN_id=requset.session['lid'])).order_by('-id')
+    res2 = health.objects.filter(USER=User.objects.get(LOGIN_id=requset.session['lid']))
+
+    if res2.exists():
+        lis = []
+        months = []
+        cnt = 1
+        for i in res2:
+            lis.append(int(i.weight))
+            months.append("Month " + str(cnt))
+            cnt += 1
+
+        fig, ax = plt.subplots()
+        ax.plot(months, lis)
+
+        canvas = FigureCanvasAgg(fig)
+        response = HttpResponse(content_type='image/png')
+        canvas.print_png(response)
+
+
+        d = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        plt.savefig(r"E:\nutrifit\AI_DIET_CONSULTANT\myapp\static\charts\\" + d + ".png")
+
+        path = "/static/charts/" + d + ".png"
+        return render(requset, 'user/myprogress.html', {'data': res, 'chart_path': path})
+    else:
+        return HttpResponse("<script>alert('Please enter health details');window.location='/uploadhealth/#abc'</script>")
+
+def myprogresstrainer(requset,id):
+    res = health.objects.filter(USER=id).order_by('-id')
+    res2 = health.objects.filter(USER=id)
+
+    if res2.exists():
+        lis = []
+        months = []
+        cnt = 1
+        for i in res2:
+            lis.append(int(i.weight))
+            months.append("Month " + str(cnt))
+            cnt += 1
+
+        fig, ax = plt.subplots()
+        ax.plot(months, lis)
+
+        canvas = FigureCanvasAgg(fig)
+        response = HttpResponse(content_type='image/png')
+        canvas.print_png(response)
+
+
+        d = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        plt.savefig(r"E:\nutrifit\AI_DIET_CONSULTANT\myapp\static\charts\\" + d + ".png")
+
+        path = "/static/charts/" + d + ".png"
+        return render(requset, 'trainer/myprogresstrainer.html', {'data': res, 'chart_path': path})
+    else:
+        return HttpResponse("<script>alert('Progress not available');window.location='/trainerhome'</script>")
