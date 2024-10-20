@@ -81,8 +81,8 @@ urlpatterns = [
     path('Uchatsent',views.Uchatsent),
     path('chatreply',views.chatrply),
     path('Uchatreply',views.Uchatrply),
-    # path('deleteuser/<id>',views.deleteuser),
-    # path('deleteuserprofile/<id>',views.deleteuserprofile),
+    path('deleteuser/<id>',views.deleteuser),
+    path('deleteuserprofile/<id>',views.deleteuserprofile),
     path('myprogress',views.myprogress),
     path('myprogresstrainer/<id>',views.myprogresstrainer),
 

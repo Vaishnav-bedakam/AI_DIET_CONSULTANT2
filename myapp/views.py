@@ -949,30 +949,30 @@ def viewworkoutuser(request):
         return render(request,'user/view workout.html',{'data':res})
     else:
         return render(request,'user/noworkouts.html')
-# def deleteuser(requset,id):
+def deleteuser(requset,id):
 
-#         user_to_delete = User.objects.get(id=id)
+        user_to_delete = User.objects.get(id=id)
 
-#         login_to_delete = user_to_delete.LOGIN
+        login_to_delete = user_to_delete.LOGIN
 
-#         user_to_delete.delete()
+        user_to_delete.delete()
 
 
-#         login_to_delete.delete()
+        login_to_delete.delete()
 
-#         return HttpResponse("<script>alert('User deleted successfully');window.location='/viewbatch#abc'</script>")
+        return HttpResponse("<script>alert('User deleted successfully');window.location='/viewbatch#abc'</script>")
 
-# def deleteuserprofile(requset,id):
+def deleteuserprofile(requset,id):
 
-#         user_to_delete = User.objects.get(id=id)
+        user_to_delete = User.objects.get(id=id)
 
-#         login_to_delete = user_to_delete.LOGIN
+        login_to_delete = user_to_delete.LOGIN
 
-#         user_to_delete.delete()
+        user_to_delete.delete()
 
-#         login_to_delete.delete()
+        login_to_delete.delete()
 
-#         return HttpResponse("<script>alert('Profile deleted successfully');window.location='/'</script>")
+        return HttpResponse("<script>alert('Profile deleted successfully');window.location='/'</script>")
 
 def calculate_bmi(request):
     if request.method == "POST":
